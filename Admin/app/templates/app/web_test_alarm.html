@@ -1,0 +1,74 @@
+{% extends "app/base_site.html" %}
+
+{% block title %} 测试报警视频 {% endblock title %}
+
+{% block content %}
+<style>
+  .video-container {
+    max-width: 800px;
+    margin: 20px auto;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  }
+  .video-player {
+    width: 100%;
+    display: block;
+  }
+  .video-info {
+    padding: 10px;
+    border-top: 1px solid #eee;
+  }
+</style>
+
+<div class="right_col" role="main">
+  <div class="">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="x_panel">
+          <div class="x_title">
+            <h2>测试报警视频播放</h2>
+            <div class="clearfix"></div>
+          </div>
+          <div class="x_content">
+            <div class="video-container">
+              <video class="video-player" controls autoplay muted>
+                <source src="/media/saved_videos/control_1745602663_annotated_20250508_162317.mp4" type="video/mp4">
+                您的浏览器不支持视频标签。
+              </video>
+              <div class="video-info">
+                <h4>视频信息</h4>
+                <p>文件名: control_1745602663_annotated_20250508_162317.mp4</p>
+                <p>路径: media/saved_videos/control_1745602663_annotated_20250508_162317.mp4</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock content %}
+
+{% block javascripts %}
+  {{ block.super }}
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // You can add any JavaScript for the video player here
+      console.log('Video player loaded');
+
+      const videoPlayer = document.querySelector('.video-player');
+
+      // Log when video starts playing
+      videoPlayer.addEventListener('playing', function() {
+        console.log('Video is playing');
+      });
+
+      // Log any errors
+      videoPlayer.addEventListener('error', function(e) {
+        console.error('Video error:', e);
+      });
+    });
+  </script>
+{% endblock javascripts %}

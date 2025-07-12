@@ -1,0 +1,58 @@
+2025-07-12 19:10:53.501 D MediaServer.exe[16948-stamp thread] util.cpp:341 operator () | Stamp thread started!
+2025-07-12 19:10:53.514 I MediaServer.exe[16948-11892] EventPoller.cpp:453 EventPollerPool | 创建EventPoller个数:16
+2025-07-12 19:10:53.518 I MediaServer.exe[16948-11892] TcpServer.cpp:199 start_l | TCP Server listening on [::]:554
+2025-07-12 19:10:53.521 I MediaServer.exe[16948-11892] TcpServer.cpp:199 start_l | TCP Server listening on [::]:1935
+2025-07-12 19:10:53.524 I MediaServer.exe[16948-11892] TcpServer.cpp:199 start_l | TCP Server listening on [::]:80
+2025-07-12 19:10:53.527 I MediaServer.exe[16948-11892] TcpServer.cpp:199 start_l | TCP Server listening on [::]:443
+2025-07-12 19:10:53.530 I MediaServer.exe[16948-11892] TcpServer.cpp:199 start_l | TCP Server listening on [::]:10000
+2025-07-12 19:10:53.536 I MediaServer.exe[16948-11892] UdpServer.cpp:104 start_l | UDP Server bind to [::]:10000
+2025-07-12 19:10:53.536 I MediaServer.exe[16948-11892] main.cpp:330 start_main | 已启动http api 接口
+2025-07-12 19:10:53.537 I MediaServer.exe[16948-11892] main.cpp:332 start_main | 已启动http hook 接口
+2025-07-12 19:11:16.760 D MediaServer.exe[16948-event poller 0] RtspSession.cpp:53 RtspSession | 1-740(127.0.0.1:52695) 
+2025-07-12 19:11:16.771 D MediaServer.exe[16948-event poller 0] MediaSink.cpp:136 emitAllTrackReady | all track ready use 0ms
+2025-07-12 19:11:16.771 T MediaServer.exe[16948-event poller 0] MediaSink.cpp:258 addMuteAudioTrack | mute aac track added
+2025-07-12 19:11:16.771 I MediaServer.exe[16948-event poller 0] MediaSource.cpp:431 emitEvent | 媒体注册:fmp4 __defaultVhost__ live test
+2025-07-12 19:11:16.772 I MediaServer.exe[16948-event poller 0] MultiMediaSourceMuxer.cpp:318 onAllTrackReady | stream: rtsp://127.0.0.1:554/live/test , codec info: H264[1920/1080/30] mpeg4-generic[8000/1/16] 
+2025-07-12 19:11:16.772 I MediaServer.exe[16948-event poller 0] MediaSource.cpp:431 emitEvent | 媒体注册:rtmp __defaultVhost__ live test
+2025-07-12 19:11:16.772 I MediaServer.exe[16948-event poller 0] MediaSource.cpp:431 emitEvent | 媒体注册:ts __defaultVhost__ live test
+2025-07-12 19:11:16.772 I MediaServer.exe[16948-event poller 0] MediaSource.cpp:431 emitEvent | 媒体注册:rtsp __defaultVhost__ live test
+2025-07-12 19:11:16.777 W MediaServer.exe[16948-event poller 0] HlsMaker.cpp:82 inputData | stamp reduce: 4266987322 -> 4266987305
+2025-07-12 19:11:20.584 I MediaServer.exe[16948-event poller 0] MediaSource.cpp:431 emitEvent | 媒体注册:hls __defaultVhost__ live test
+2025-07-12 19:11:55.784 W MediaServer.exe[16948-event poller 0] EventPoller.cpp:188 async_l | take time:15ms, thread may be overloaded
+2025-07-12 19:13:24.116 W MediaServer.exe[16948-event poller 0] EventPoller.cpp:188 async_l | take time:16ms, thread may be overloaded
+2025-07-12 19:13:26.442 T MediaServer.exe[16948-event poller 1] HttpSession.cpp:27 HttpSession | 2-756(127.0.0.1:53506) 
+2025-07-12 19:13:26.448 T MediaServer.exe[16948-event poller 1] HttpSession.cpp:121 onError | 2-756(127.0.0.1:53506) end of file
+2025-07-12 19:13:26.448 T MediaServer.exe[16948-event poller 1] HttpSession.cpp:33 ~HttpSession | 2-756(127.0.0.1:53506) 
+2025-07-12 19:13:28.690 T MediaServer.exe[16948-event poller 1] HttpSession.cpp:27 HttpSession | 3-756(127.0.0.1:53511) 
+2025-07-12 19:13:28.695 T MediaServer.exe[16948-event poller 1] HttpSession.cpp:121 onError | 3-756(127.0.0.1:53511) end of file
+2025-07-12 19:13:28.695 T MediaServer.exe[16948-event poller 1] HttpSession.cpp:33 ~HttpSession | 3-756(127.0.0.1:53511) 
+2025-07-12 19:13:32.504 T MediaServer.exe[16948-event poller 1] HttpSession.cpp:27 HttpSession | 4-756(127.0.0.1:53514) 
+2025-07-12 19:13:32.509 T MediaServer.exe[16948-event poller 1] HttpSession.cpp:121 onError | 4-756(127.0.0.1:53514) end of file
+2025-07-12 19:13:32.509 T MediaServer.exe[16948-event poller 1] HttpSession.cpp:33 ~HttpSession | 4-756(127.0.0.1:53514) 
+2025-07-12 19:14:40.443 W MediaServer.exe[16948-event poller 0] EventPoller.cpp:188 async_l | take time:16ms, thread may be overloaded
+2025-07-12 19:16:03.098 T MediaServer.exe[16948-event poller 2] HttpSession.cpp:27 HttpSession | 5-776(127.0.0.1:53930) 
+2025-07-12 19:16:03.101 T MediaServer.exe[16948-event poller 2] HttpSession.cpp:121 onError | 5-776(127.0.0.1:53930) end of file
+2025-07-12 19:16:03.101 T MediaServer.exe[16948-event poller 2] HttpSession.cpp:33 ~HttpSession | 5-776(127.0.0.1:53930) 
+2025-07-12 19:16:20.783 W MediaServer.exe[16948-event poller 0] EventPoller.cpp:188 async_l | take time:16ms, thread may be overloaded
+2025-07-12 19:16:30.815 W MediaServer.exe[16948-event poller 0] EventPoller.cpp:188 async_l | take time:16ms, thread may be overloaded
+2025-07-12 19:16:30.993 T MediaServer.exe[16948-event poller 2] HttpSession.cpp:27 HttpSession | 6-764(127.0.0.1:54008) 
+2025-07-12 19:16:56.524 W MediaServer.exe[16948-event poller 2] HttpSession.cpp:105 onError | 6-764(127.0.0.1:54008) FLV/TS/FMP4播放器(__defaultVhost__/live/test)断开:end of file,耗时(s):25
+2025-07-12 19:16:56.524 T MediaServer.exe[16948-event poller 2] HttpSession.cpp:33 ~HttpSession | 6-764(127.0.0.1:54008) 
+2025-07-12 19:17:24.211 T MediaServer.exe[16948-event poller 2] HttpSession.cpp:27 HttpSession | 7-784(127.0.0.1:54236) 
+2025-07-12 19:17:24.216 T MediaServer.exe[16948-event poller 2] HttpSession.cpp:121 onError | 7-784(127.0.0.1:54236) end of file
+2025-07-12 19:17:24.216 T MediaServer.exe[16948-event poller 2] HttpSession.cpp:33 ~HttpSession | 7-784(127.0.0.1:54236) 
+2025-07-12 19:18:00.295 T MediaServer.exe[16948-event poller 2] HttpSession.cpp:27 HttpSession | 8-784(127.0.0.1:54338) 
+2025-07-12 19:18:00.299 T MediaServer.exe[16948-event poller 2] HttpSession.cpp:121 onError | 8-784(127.0.0.1:54338) end of file
+2025-07-12 19:18:00.299 T MediaServer.exe[16948-event poller 2] HttpSession.cpp:33 ~HttpSession | 8-784(127.0.0.1:54338) 
+2025-07-12 19:18:01.645 T MediaServer.exe[16948-event poller 2] HttpSession.cpp:27 HttpSession | 9-784(127.0.0.1:54340) 
+2025-07-12 19:18:01.649 T MediaServer.exe[16948-event poller 2] HttpSession.cpp:121 onError | 9-784(127.0.0.1:54340) end of file
+2025-07-12 19:18:01.649 T MediaServer.exe[16948-event poller 2] HttpSession.cpp:33 ~HttpSession | 9-784(127.0.0.1:54340) 
+2025-07-12 19:19:35.471 W MediaServer.exe[16948-event poller 0] EventPoller.cpp:188 async_l | take time:16ms, thread may be overloaded
+2025-07-12 19:20:11.615 W MediaServer.exe[16948-event poller 0] EventPoller.cpp:188 async_l | take time:16ms, thread may be overloaded
+2025-07-12 19:26:39.985 I MediaServer.exe[16948-event poller 0] MediaSource.cpp:431 emitEvent | 媒体注销:hls __defaultVhost__ live test
+2025-07-12 19:26:39.985 I MediaServer.exe[16948-event poller 0] MediaSource.cpp:431 emitEvent | 媒体注销:ts __defaultVhost__ live test
+2025-07-12 19:26:39.986 I MediaServer.exe[16948-event poller 0] MediaSource.cpp:431 emitEvent | 媒体注销:rtmp __defaultVhost__ live test
+2025-07-12 19:26:39.987 I MediaServer.exe[16948-event poller 0] MediaSource.cpp:431 emitEvent | 媒体注销:fmp4 __defaultVhost__ live test
+2025-07-12 19:26:39.989 I MediaServer.exe[16948-event poller 0] MediaSource.cpp:431 emitEvent | 媒体注销:rtsp __defaultVhost__ live test
+2025-07-12 19:26:39.989 W MediaServer.exe[16948-event poller 0] RtspSession.cpp:65 onError | 1-740(127.0.0.1:52695) RTSP播放器(__defaultVhost__/live/test)断开:recv teardown request,耗时(s):923
+2025-07-12 19:26:39.989 D MediaServer.exe[16948-event poller 0] RtspSession.cpp:59 ~RtspSession | 1-740(127.0.0.1:52695) 

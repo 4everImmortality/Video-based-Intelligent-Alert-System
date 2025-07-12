@@ -1,0 +1,6 @@
+ffmpeg -re -stream_loop  -1  -i test.mp4   -rtsp_transport tcp -c copy -f rtsp rtsp://127.0.0.1:554/live/test
+
+ffmpeg -f dshow -i video="Integrated Camera" -vf scale=1280:720 -c:v h264_nvenc -preset veryfast -tune zerolatency -pix_fmt yuv420p -f rtsp -rtsp_transport tcp rtsp://127.0.0.1:554/live/cam
+
+
+

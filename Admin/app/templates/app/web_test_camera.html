@@ -1,0 +1,78 @@
+{% extends "app/base_site.html" %}
+{% block title %}Camera Test{% endblock %}
+
+{% block content %}
+<div class="right_col" role="main">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="x_panel">
+                <div class="x_title">
+                    <h2>Camera Test</h2>
+                    <div class="clearfix"></div>
+                </div>
+                <div class="x_content">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <video id="webcam-preview" autoplay playsinline style="width:100%"></video>
+                            <div class="mt-2">
+                                <button class="btn btn-primary" id="start-webcam">Start Camera</button>
+                                <button class="btn btn-danger" id="stop-webcam">Stop Camera</button>
+                            </div>
+                            <div class="mt-3">
+                                <h4>Camera Information</h4>
+                                <pre id="camera-info"></pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+{{ block.super }}
+<script>
+    const videoElement = document.getElementById('webcam-preview');
+    const cameraInfoElement = document.getElementById('camera-info');
+    let stream = null;
+    
+    document.getElementById('start-webcam').addEventListener('click', async () => {
+        try {
+            // List available devices
+            const devices = await navigator.mediaDevices.enumerateDevices();
+            const videoDevices = devices.filter(device => device.kind === 'videoinput');
+            cameraInfoElement.textContent = 'Available cameras:\n' + 
+                videoDevices.map(d => `ID: ${d.deviceId}\nLabel: ${d.label || 'No label'}`).join('\n\n');
+            
+            // Start camera
+            stream = await navigator.mediaDevices.getUserMedia({
+                video: {
+                    width: { ideal: 640 },
+                    height: { ideal: 480 }
+                }, 
+                audio: true
+            });
+            videoElement.srcObject = stream;
+            
+            // Add track info
+            const trackInfo = stream.getTracks().map(track => 
+                `Track: ${track.kind}, Label: ${track.label}, ID: ${track.id}`).join('\n');
+            cameraInfoElement.textContent += '\n\nActive tracks:\n' + trackInfo;
+            
+        } catch (error) {
+            cameraInfoElement.textContent = `Error accessing camera: ${error.message}`;
+            console.error('Error:', error);
+        }
+    });
+    
+    document.getElementById('stop-webcam').addEventListener('click', () => {
+        if (stream) {
+            stream.getTracks().forEach(track => track.stop());
+            videoElement.srcObject = null;
+            cameraInfoElement.textContent += '\n\nCamera stopped';
+        }
+    });
+</script>
+{% endblock %}

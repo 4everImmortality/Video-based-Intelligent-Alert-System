@@ -1,0 +1,12 @@
+Django
+requests
+psutil
+Pillow
+numpy==1.26.4
+opencv-python
+transformers==4.38.0
+torch==2.1.2
+accelerate==0.25.0
+bitsandbytes==0.41.0
+sentencepiece==0.1.99
+google-genai

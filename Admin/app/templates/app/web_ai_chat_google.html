@@ -1,0 +1,1004 @@
+{% extends "app/base_site.html" %}
+
+{% block title %} Google Gemini 对话 {% endblock title %}
+
+{% block stylesheets %}
+    {{ block.super }}
+    <style>
+        .chat-container {
+            height: 70vh;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+        }
+
+        .chat-layout {
+            display: flex;
+            flex-direction: row;
+            height: 70vh;
+        }
+
+        .sidebar {
+            width: 260px;
+            background-color: #f9f9f9;
+            border-right: 1px solid #ddd;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+
+        .new-chat-btn {
+            margin: 10px;
+            padding: 10px 15px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-align: left;
+            display: flex;
+            align-items: center;
+        }
+
+        .new-chat-btn i {
+            margin-right: 10px;
+        }
+
+        .history-list {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .history-item {
+            padding: 10px 15px;
+            margin: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .history-item:hover {
+            background-color: #e9e9e9;
+        }
+
+        .history-item.active {
+            background-color: #e0e0e0;
+        }
+
+        .delete-chat {
+            color: #999;
+            visibility: hidden;
+        }
+
+        .history-item:hover .delete-chat {
+            visibility: visible;
+        }
+
+        .history-title {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            flex: 1;
+        }
+
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .message {
+            max-width: 85%;
+            margin-bottom: 15px;
+            padding: 10px 15px;
+            border-radius: 18px;
+            line-height: 1.5;
+        }
+
+        .user-message {
+            align-self: flex-end;
+            background-color: #0084ff;
+            color: white;
+            border-bottom-right-radius: 5px;
+        }
+
+        .bot-message, .assistant-message {
+            align-self: flex-start;
+            background-color: #f1f0f0;
+            color: #333;
+            border-bottom-left-radius: 5px;
+        }
+
+        .message-input {
+            display: flex;
+            padding: 15px;
+            border-top: 1px solid #ddd;
+        }
+
+        .message-input textarea {
+            flex: 1;
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            resize: none;
+            outline: none;
+        }
+
+        .send-button {
+            margin-left: 10px;
+            background-color: #0084ff;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-size: 18px;
+            cursor: pointer;
+        }
+
+        .send-button.abort-button {
+            background-color: #ff4d4d;
+        }
+
+        .send-button.abort-button:hover {
+            background-color: #e60000;
+        }
+
+        .typing-indicator {
+            align-self: flex-start;
+            background-color: #f1f0f0;
+            padding: 10px 15px;
+            border-radius: 18px;
+            margin-bottom: 15px;
+            display: none;
+        }
+
+        .typing-dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: #555;
+            margin-right: 3px;
+            animation: typing-dot 1.4s infinite ease-in-out both;
+        }
+
+        .typing-dot:nth-child(1) {
+            animation-delay: 0s;
+        }
+
+        .typing-dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes typing-dot {
+            0%, 80%, 100% {
+                transform: scale(0);
+            }
+            40% {
+                transform: scale(1);
+            }
+        }
+
+        .no-conversations {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+            font-style: italic;
+        }
+
+        .empty-chat-message {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            padding: 20px;
+            text-align: center;
+            color: #666;
+        }
+
+        .empty-chat-message h3 {
+            margin-bottom: 15px;
+        }
+
+        .empty-chat-message p {
+            max-width: 600px;
+        }
+
+        .file-upload-container {
+            margin: 10px 15px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .file-upload-input {
+            margin-right: 10px;
+        }
+
+        #image-preview-container {
+            margin-top: 10px;
+            text-align: center;
+            border: 1px dashed #ddd;
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        .api-key-container {
+            padding: 10px 15px;
+            display: flex;
+            align-items: center;
+            border-top: 1px solid #ddd;
+        }
+
+        .api-key-input {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-right: 5px;
+        }
+
+        .streaming-toggle {
+            margin-left: 10px;
+            display: flex;
+            align-items: center;
+        }
+
+        .streaming-toggle input {
+            margin-right: 5px;
+        }
+
+        #streaming-response {
+            width: 100%;
+            padding: 0;
+            margin: 0;
+            white-space: pre-wrap;
+        }
+    </style>
+{% endblock stylesheets %}
+
+{% block content %}
+    <div class="right_col" role="main">
+        <div class="page-title">
+            <div class="title_left">
+                <h3>Google Gemini 对话</h3>
+            </div>
+        </div>
+
+        <div class="row" style="margin: 0; padding: 0;">
+            <div class="col-md-12 col-sm-12 col-xs-12">
+                <div class="x_panel">
+                    <div class="x_content">
+                        <div class="chat-layout">
+                            <div class="sidebar">
+                                <button id="new-chat-btn" class="new-chat-btn">
+                                    <i class="fa fa-plus"></i> 新对话
+                                </button>
+                                <div id="conversation-list" class="history-list">
+                                    <div class="no-conversations">暂无对话记录</div>
+                                </div>
+                            </div>
+                            <div class="main-content">
+                                <div class="file-upload-container">
+                                    <input type="file" id="file-upload" class="file-upload-input" accept="image/*">
+                                    <button id="clear-upload" class="btn btn-sm btn-danger" style="display:none">
+                                        清除图片
+                                    </button>
+                                    <div id="image-preview-container" style="display:none; width: 100%;">
+                                        <img id="image-preview" style="max-width: 300px; max-height: 200px;">
+                                    </div>
+                                </div>
+                                <div class="chat-messages" id="chat-messages">
+                                    <div class="empty-chat-message">
+                                        <h3>Google Gemini</h3>
+                                        <p>这是一个与 Google Gemini 对话的界面。在开始对话前，请确保已输入有效的 Google
+                                            API Key。您可以询问问题、发送图片进行分析或请求创意内容。</p>
+                                    </div>
+                                </div>
+                                <div class="typing-indicator" id="typing-indicator">
+                                    <div class="typing-dot"></div>
+                                    <div class="typing-dot"></div>
+                                    <div class="typing-dot"></div>
+                                </div>
+                                <div class="message-input">
+                                    <textarea id="message-input" placeholder="输入消息..." rows="1"></textarea>
+                                    <button class="send-button" id="send-button">
+                                        <i class="fa fa-paper-plane"></i>
+                                    </button>
+                                </div>
+                                <div class="api-key-container">
+                                    <input type="password" id="api-key-input" class="api-key-input"
+                                           placeholder="输入您的Google API Key"/>
+                                    <button id="save-api-key" class="btn btn-primary btn-sm">保存</button>
+                                    {#<div class="streaming-toggle">#}
+                                    {#    <input type="checkbox" id="streaming-toggle" checked>#}
+                                    {#    <label for="streaming-toggle">流式响应</label>#}
+                                    {#</div>#}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}
+
+{% block javascripts %}
+    {{ block.super }}
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/highlight.js@11.7.0/lib/highlight.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.7.0/styles/atom-one-dark.css">
+
+    <script>
+        // Constants and variables
+        const STORAGE_KEY_API_KEY = 'gemini_google_api_key'; // Still use localStorage for API key
+
+        let currentConversationId = null;
+        // chatHistory will now be loaded from the backend for the current conversation
+        let chatHistory = [];
+        let currentImageData = null;
+        let apiKey = localStorage.getItem(STORAGE_KEY_API_KEY) || '';
+        let isStreaming = true; // Default to streaming
+        let streamController = null;
+
+        // DOM Elements
+        const messageInput = document.getElementById('message-input');
+        const sendButton = document.getElementById('send-button');
+        const chatMessages = document.getElementById('chat-messages');
+        const typingIndicator = document.getElementById('typing-indicator');
+        const fileUpload = document.getElementById('file-upload');
+        const clearUploadBtn = document.getElementById('clear-upload');
+        const imagePreview = document.getElementById('image-preview');
+        const imagePreviewContainer = document.getElementById('image-preview-container');
+        const newChatBtn = document.getElementById('new-chat-btn');
+        const conversationList = document.getElementById('conversation-list');
+        const apiKeyInput = document.getElementById('api-key-input');
+        const saveApiKeyBtn = document.getElementById('save-api-key');
+        // const streamingToggle = document.getElementById('streaming-toggle'); // Commented out in HTML
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function () {
+            loadConversationsList(); // Load conversation list from backend
+            checkUrlForConversation(); // Check URL for conversation ID
+
+            // Initialize API key input
+            if (apiKey) {
+                apiKeyInput.value = apiKey;
+            }
+
+            // Initialize streaming toggle (if uncommented in HTML)
+            // if (streamingToggle) {
+            //     isStreaming = streamingToggle.checked;
+            //     streamingToggle.addEventListener('change', function () {
+            //         isStreaming = this.checked;
+            //     });
+            // }
+        });
+
+        // Event Listeners
+        messageInput.addEventListener('input', function () {
+            this.style.height = 'auto';
+            this.style.height = (this.scrollHeight) + 'px';
+        });
+
+        messageInput.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+
+        sendButton.addEventListener('click', function () {
+            if (this.classList.contains('abort-button')) {
+                // Button is in abort mode, cancel the stream
+                if (streamController) {
+                    streamController.abort();
+                    streamController = null;
+                    typingIndicator.style.display = 'none';
+                    toggleSendButtonMode(false);
+                }
+            } else {
+                // Button is in send mode, send message
+                sendMessage();
+            }
+        });
+        fileUpload.addEventListener('change', handleFileSelect);
+        clearUploadBtn.addEventListener('click', clearFileUpload);
+        newChatBtn.addEventListener('click', createNewConversation);
+        saveApiKeyBtn.addEventListener('click', saveApiKey);
+
+
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            if (!file.type.startsWith('image/')) {
+                addMessageToChat('bot', '目前仅支持上传图片');
+                clearFileUpload();
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                imagePreview.src = e.target.result;
+                imagePreviewContainer.style.display = 'block';
+                clearUploadBtn.style.display = 'inline';
+                currentImageData = e.target.result; // Base64 data URL
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function clearFileUpload() {
+            fileUpload.value = '';
+            imagePreviewContainer.style.display = 'none';
+            clearUploadBtn.style.display = 'none';
+            currentImageData = null;
+        }
+
+        function saveApiKey() {
+            const newApiKey = apiKeyInput.value.trim();
+            if (newApiKey) {
+                apiKey = newApiKey;
+                localStorage.setItem(STORAGE_KEY_API_KEY, apiKey);
+                alert('API Key 已保存');
+            } else {
+                alert('请输入有效的 API Key');
+            }
+        }
+
+        function checkUrlForConversation() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const conversationId = urlParams.get('id');
+
+            if (conversationId) {
+                loadConversation(conversationId); // Load specific conversation from backend
+            } else {
+                 // If no ID in URL, show empty state and load conversation list
+                 showEmptyChatState();
+                 loadConversationsList();
+            }
+        }
+
+        function showEmptyChatState() {
+             chatMessages.innerHTML = `
+                <div class="empty-chat-message">
+                    <h3>Google Gemini</h3>
+                    <p>这是一个与 Google Gemini 对话的界面。在开始对话前，请确保已输入有效的 Google API Key。您可以询问问题、发送图片进行分析或请求创意内容。</p>
+                </div>
+            `;
+            currentConversationId = null;
+            chatHistory = []; // Clear frontend history
+            updateUrl(); // Remove ID from URL
+            updateConversationListUI(null); // Clear active state in sidebar
+        }
+
+
+        async function createNewConversation() {
+            // Clear frontend state immediately for responsiveness
+            showEmptyChatState();
+            // No need to call backend immediately, the first message sent will create it.
+            // Just update the UI to reflect a new chat state.
+             loadConversationsList(); // Refresh list to show "新对话" placeholder eventually
+        }
+
+        async function loadConversation(conversationId) {
+             try {
+                const response = await fetch(`/api/conversations/${conversationId}/`);
+                const data = await response.json();
+
+                if (data.success) {
+                    currentConversationId = data.conversation_id;
+                    chatHistory = data.messages; // Load history from backend
+
+                    chatMessages.innerHTML = ''; // Clear current messages
+
+                    // Add messages to chat UI
+                    for (const msg of chatHistory) {
+                        if (msg.image) {
+                            addImageToChat(msg.role, msg.image);
+                        }
+                        if (msg.content) {
+                            addMessageToChat(msg.role, msg.content);
+                        }
+                    }
+
+                    updateUrl();
+                    updateConversationListUI(currentConversationId); // Highlight active conversation
+                    chatMessages.scrollTop = chatMessages.scrollHeight; // Scroll to bottom
+
+                } else {
+                    console.error('Failed to load conversation:', data.error);
+                    alert('加载对话失败: ' + data.error);
+                    showEmptyChatState(); // Show empty state on error
+                    loadConversationsList(); // Refresh list
+                }
+            } catch (error) {
+                console.error('Error loading conversation:', error);
+                alert('加载对话时发生网络错误');
+                showEmptyChatState(); // Show empty state on error
+                loadConversationsList(); // Refresh list
+            }
+        }
+
+        async function sendMessage() {
+            const message = messageInput.value.trim();
+            if (!message && !currentImageData) return;
+
+            // Check if API key is set
+            if (!apiKey) {
+                addMessageToChat('bot', '请先设置 Google API Key');
+                return;
+            }
+
+            // Add user message to chat UI immediately
+            if (message) {
+                addMessageToChat('user', message);
+            }
+
+            // Add image to chat if present
+            if (currentImageData) {
+                addImageToChat('user', currentImageData);
+            }
+
+             // Add user message to frontend history for sending to API
+            const userMessageForHistory = { role: 'user', content: message };
+            if (currentImageData) {
+                 userMessageForHistory.image = currentImageData;
+            }
+            chatHistory.push(userMessageForHistory);
+
+
+            // Reset input
+            messageInput.value = '';
+            messageInput.style.height = 'auto';
+            clearFileUpload();
+
+            // Show typing indicator
+            typingIndicator.style.display = 'block';
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+
+            // Abort previous stream if any
+            if (streamController) {
+                streamController.abort();
+                streamController = null;
+            }
+
+            // Create bot message for streaming response container
+            let botMessageElement = null;
+            if (isStreaming) {
+                botMessageElement = document.createElement('div');
+                botMessageElement.className = 'message bot-message';
+                // Use a unique ID for the streaming container
+                const streamingContainerId = 'streaming-response-container-' + Date.now();
+                botMessageElement.id = streamingContainerId;
+                botMessageElement.innerHTML = '<div id="streaming-response-' + Date.now() + '"></div>'; // Inner element for text
+                chatMessages.appendChild(botMessageElement);
+                 // Scroll to the bottom to show the streaming message container
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+
+            // Create request payload
+            const payload = {
+                // Send the full history + the current user message to the backend
+                messages: chatHistory,
+                conversation_id: currentConversationId, // Send current ID (can be null for new chat)
+                api_key: apiKey,
+                stream: isStreaming
+            };
+
+            // Send message to API
+            if (isStreaming) {
+                // Streaming response
+                streamResponse(payload, botMessageElement);
+            } else {
+                // Normal response
+                try {
+                    const response = await fetch('/api/ai_chat_google/', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': getCookie('csrftoken')
+                        },
+                        body: JSON.stringify(payload)
+                    });
+                    const data = await response.json();
+
+                    // Hide typing indicator
+                    typingIndicator.style.display = 'none';
+
+                    if (data.success) {
+                         // Update conversation ID if it was a new chat
+                        if (!currentConversationId && data.conversation_id) {
+                            currentConversationId = data.conversation_id;
+                            updateUrl(); // Update URL with new ID
+                            loadConversationsList(); // Refresh conversation list
+                        }
+
+                        // Add bot response to chat UI
+                        addMessageToChat('bot', data.response);
+
+                        // Add bot response to frontend history
+                        chatHistory.push({role: 'assistant', content: data.response});
+
+                    } else {
+                        // Show error message
+                        addMessageToChat('bot', '抱歉，处理您的请求时出错：' + data.error);
+                         // Remove the last user message from history if the request failed
+                         chatHistory.pop();
+                    }
+                } catch (error) {
+                    // Hide typing indicator
+                    typingIndicator.style.display = 'none';
+
+                    // Show error message
+                    addMessageToChat('bot', '抱歉，发生了网络错误，请稍后重试。');
+                    console.error('Error:', error);
+                     // Remove the last user message from history if the request failed
+                     chatHistory.pop();
+                }
+            }
+        }
+
+        async function streamResponse(payload, botMessageElement) {
+            // Get the inner element for text content within the streaming container
+            const streamingResponseElement = botMessageElement ? botMessageElement.querySelector('div') : null;
+            let responseText = '';
+            streamController = new AbortController();
+
+            // Switch button to abort mode
+            toggleSendButtonMode(true);
+
+            try {
+                const response = await fetch('/api/ai_chat_google/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken')
+                    },
+                    body: JSON.stringify(payload),
+                    signal: streamController.signal
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Network error: ${response.status}`);
+                }
+
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+
+                function processText(result) {
+                    if (result.done) {
+                        // Hide typing indicator
+                        typingIndicator.style.display = 'none';
+                        toggleSendButtonMode(false);
+
+                        // Add full bot response to frontend history
+                        chatHistory.push({role: 'assistant', content: responseText});
+
+                        // Format final message with markdown and highlight
+                        if (streamingResponseElement) {
+                            const htmlContent = marked.parse(responseText);
+                            streamingResponseElement.innerHTML = htmlContent;
+
+                            // Apply syntax highlighting to code blocks if hljs is defined
+                            if (typeof hljs !== 'undefined') {
+                                streamingResponseElement.querySelectorAll('pre code').forEach((block) => {
+                                    hljs.highlightElement(block);
+                                });
+                            } else {
+                                 console.error('highlight.js is not loaded for streaming response highlighting.');
+                            }
+                        }
+
+                        // Refresh conversation list to update title and timestamp
+                        loadConversationsList();
+
+                        return;
+                    }
+
+                    const chunk = decoder.decode(result.value, {stream: true});
+                    const lines = chunk.split('\n');
+
+                    for (const line of lines) {
+                        if (!line.trim()) continue;
+
+                        try {
+                            const data = JSON.parse(line);
+
+                            if (data.conversation_id && !currentConversationId) {
+                                // Received conversation ID for a new chat
+                                currentConversationId = data.conversation_id;
+                                updateUrl(); // Update URL with new ID
+                                // No need to loadConversationsList here, it will be called after stream ends
+                            } else if (data.chunk) {
+                                responseText += data.chunk;
+                                if (streamingResponseElement) {
+                                    // Update the text content for immediate display
+                                    // Note: Markdown parsing and highlighting happens after stream is done
+                                    streamingResponseElement.textContent = responseText;
+                                }
+                            } else if (data.error) {
+                                typingIndicator.style.display = 'none';
+                                addMessageToChat('bot', '错误: ' + data.error);
+                                // Stop processing stream on error
+                                reader.cancel();
+                                toggleSendButtonMode(false);
+                                 // Remove the last user message from history if the request failed
+                                chatHistory.pop();
+                                return;
+                            }
+                        } catch (e) {
+                            console.error('Error parsing JSON chunk:', e, line);
+                            // If a single chunk is bad JSON, try to continue with others,
+                            // but log the error. If it's a persistent issue, the API call will likely fail later.
+                        }
+                    }
+
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+
+                    return reader.read().then(processText);
+                }
+
+                reader.read().then(processText);
+
+            } catch (error) {
+                // Hide typing indicator
+                typingIndicator.style.display = 'none';
+                 toggleSendButtonMode(false);
+
+                if (error.name === 'AbortError') {
+                    console.log('Fetch aborted');
+                    // Clean up streaming element if aborted midway and no content
+                     if (botMessageElement && botMessageElement.id.startsWith('streaming-response-container-') && responseText === '') {
+                        botMessageElement.remove();
+                     } else if (streamingResponseElement && responseText !== '') {
+                         // If some content was received, try to finalize with markdown and highlighting
+                         const htmlContent = marked.parse(responseText);
+                         streamingResponseElement.innerHTML = htmlContent;
+                         if (typeof hljs !== 'undefined') {
+                             streamingResponseElement.querySelectorAll('pre code').forEach((block) => {
+                                 hljs.highlightElement(block);
+                             });
+                         }
+                     }
+                     // Remove the last user message from history if aborted before response
+                     if (chatHistory.length > 0 && chatHistory[chatHistory.length - 1].role === 'user') {
+                         chatHistory.pop();
+                     }
+
+
+                } else {
+                    addMessageToChat('bot', '错误: ' + error.message);
+                    console.error('Streaming Error:', error);
+                     // Remove the last user message from history if the request failed
+                     if (chatHistory.length > 0 && chatHistory[chatHistory.length - 1].role === 'user') {
+                         chatHistory.pop();
+                     }
+                }
+            }
+        }
+
+
+        function addMessageToChat(role, content) {
+            // Remove empty state if present
+            const emptyState = chatMessages.querySelector('.empty-chat-message');
+            if (emptyState) {
+                chatMessages.removeChild(emptyState);
+            }
+
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${role}-message`;
+
+            // Process markdown content for bot messages
+            if (role === 'bot' || role === 'assistant') {
+                // Process markdown
+                const htmlContent = marked.parse(content);
+                messageDiv.innerHTML = htmlContent;
+
+                // Apply syntax highlighting to code blocks if hljs is defined
+                 if (typeof hljs !== 'undefined') {
+                    messageDiv.querySelectorAll('pre code').forEach((block) => {
+                        hljs.highlightElement(block);
+                    });
+                 } else {
+                    console.error('highlight.js is not loaded for static message highlighting.');
+                    // Fallback: just set innerHTML with parsed markdown without highlighting
+                 }
+
+            } else {
+                // Simple text for user messages - escape HTML to prevent XSS
+                messageDiv.textContent = content;
+            }
+
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function addImageToChat(role, src) {
+        // Remove empty state if present
+        const emptyState = chatMessages.querySelector('.empty-chat-message');
+        if (emptyState) {
+            chatMessages.removeChild(emptyState);
+        }
+
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `message ${role}-message`;
+
+        const img = document.createElement('img');
+
+        // Check if src is already a data URL (e.g., from current user upload)
+        if (src.startsWith('data:image/')) {
+            img.src = src;
+        } else {
+            // Assume it's a raw base64 string from historical data
+            // You might need to infer the MIME type or store it with the message.
+            // For now, assuming jpeg or a common image type.
+            // A more robust solution would involve storing the mime_type in ChatMessage model.
+            let mimeType = 'image/jpeg'; // Default to JPEG.
+            // If you stored the mime_type in the DB, you'd fetch it here.
+            // For example, if your backend returned {..., 'image': 'base64_data', 'image_mime_type': 'image/png'}
+            // Then you'd use: `mimeType = msg.image_mime_type;` when loading history.
+
+            // Reconstruct the data URL
+            img.src = `data:${mimeType};base64,${src}`;
+        }
+
+        img.style.maxWidth = '100%';
+        img.style.maxHeight = '300px';
+        img.style.display = 'block'; // Ensure image takes up its own line
+
+        messageDiv.appendChild(img);
+        chatMessages.appendChild(messageDiv);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+        async function deleteConversation(id, event) {
+            event.stopPropagation(); // Prevent click on parent history item
+
+            if (confirm('确定要删除此对话吗？此操作不可撤销。')) {
+                try {
+                    const response = await fetch(`/api/conversations/${id}/delete/`, {
+                        method: 'DELETE',
+                        headers: {
+                             'X-CSRFToken': getCookie('csrftoken')
+                        }
+                    });
+                    const data = await response.json();
+
+                    if (data.success) {
+                        alert('对话已删除');
+                        // If the deleted conversation was the currently active one, create a new chat
+                        if (currentConversationId === id) {
+                            createNewConversation();
+                        }
+                        loadConversationsList(); // Refresh the conversation list
+                    } else {
+                        console.error('Failed to delete conversation:', data.error);
+                        alert('删除对话失败: ' + data.error);
+                    }
+                } catch (error) {
+                    console.error('Error deleting conversation:', error);
+                    alert('删除对话时发生网络错误');
+                }
+            }
+        }
+
+        async function loadConversationsList() {
+             try {
+                const response = await fetch('/api/conversations/');
+                const data = await response.json();
+
+                if (data.success) {
+                    updateConversationListUI(currentConversationId, data.conversations);
+                } else {
+                    console.error('Failed to load conversation list:', data.error);
+                    conversationList.innerHTML = '<div class="no-conversations">加载对话列表失败</div>';
+                }
+            } catch (error) {
+                console.error('Error loading conversation list:', error);
+                 conversationList.innerHTML = '<div class="no-conversations">加载对话列表时发生网络错误</div>';
+            }
+        }
+
+        function updateConversationListUI(activeConversationId, conversationsArray = []) {
+            // Clear current list
+            conversationList.innerHTML = '';
+
+            // Add each conversation to the list
+            if (conversationsArray.length === 0) {
+                const noConversations = document.createElement('div');
+                noConversations.className = 'no-conversations';
+                noConversations.textContent = '暂无对话记录';
+                conversationList.appendChild(noConversations);
+                return;
+            }
+
+            for (const conv of conversationsArray) {
+                const item = document.createElement('div');
+                item.className = 'history-item';
+                if (conv.id == activeConversationId) { // Use == for potential type coercion
+                    item.classList.add('active');
+                }
+
+                const titleSpan = document.createElement('span');
+                titleSpan.className = 'history-title';
+                titleSpan.textContent = conv.title || '新对话';
+                item.appendChild(titleSpan);
+
+                const deleteBtn = document.createElement('span');
+                deleteBtn.className = 'delete-chat';
+                deleteBtn.innerHTML = '<i class="fa fa-trash"></i>';
+                // Pass the conversation ID and the event object
+                deleteBtn.onclick = (e) => deleteConversation(conv.id, e);
+                item.appendChild(deleteBtn);
+
+                // Use a closure to pass the correct conversation ID to the click handler
+                item.onclick = (() => {
+                    const id = conv.id; // Capture the current conversation ID
+                    return () => loadConversation(id);
+                })();
+
+                conversationList.appendChild(item);
+            }
+        }
+
+
+        function updateUrl() {
+            const url = new URL(window.location.href);
+            if (currentConversationId) {
+                url.searchParams.set('id', currentConversationId);
+            } else {
+                url.searchParams.delete('id');
+            }
+            window.history.replaceState({}, '', url);
+        }
+
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        function toggleSendButtonMode(isAbortMode) {
+            if (isAbortMode) {
+                // Change to abort mode
+                sendButton.classList.add('abort-button');
+                sendButton.innerHTML = '<i class="fa fa-times"></i>';
+                sendButton.title = "终止回答";
+            } else {
+                // Change back to send mode
+                sendButton.classList.remove('abort-button');
+                sendButton.innerHTML = '<i class="fa fa-paper-plane"></i>';
+                sendButton.title = "发送消息";
+            }
+        }
+
+    </script>
+{% endblock javascripts %}

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FLV Video Player</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        #video-container {
+            width: 80%;
+            max-width: 800px;
+            background-color: #000;
+            position: relative;
+        }
+        #flv-player {
+            width: 100%;
+            height: auto;
+        }
+        #controls {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: space-around;
+            padding: 10px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div id="video-container">
+        <video id="flv-player" controls></video>
+        <div id="controls">
+            {#<button id="play-btn">Play</button>#}
+            {#<button id="pause-btn">Pause</button>#}
+            {#<button id="stop-btn">Stop</button>#}
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/flv.js@latest"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            if (flvjs.isSupported()) {
+                var videoElement = document.getElementById('flv-player');
+                var flvPlayer = flvjs.createPlayer({
+                    type: 'flv',
+                    url: 'http://127.0.0.1:80/analyzer/control_1745602663.live.flv' // 替换为你的FLV视频URL
+                });
+                flvPlayer.attachMediaElement(videoElement);
+                flvPlayer.load();
+
+                document.getElementById('play-btn').addEventListener('click', function() {
+                    flvPlayer.play();
+                });
+                document.getElementById('pause-btn').addEventListener('click', function() {
+                    flvPlayer.pause();
+                });
+                document.getElementById('stop-btn').addEventListener('click', function() {
+                    flvPlayer.pause();
+                    flvPlayer.currentTime = 0;
+                });
+            } else {
+                alert('Your browser does not support FLV playback.');
+            }
+        });
+    </script>
+</body>
+</html>
